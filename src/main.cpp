@@ -12,6 +12,7 @@ by Jeffery Myers is marked with CC0 1.0. To view a copy of this license, visit h
 #include "resource_dir.h"	// utility header for SearchAndSetResourceDir
 
 #include "engine/rendering.h"		// header for our rendering code
+#include "opentasks.h"		// source file for our game logic code (for now just input handling and updating the state of the tiles)
 
 int main ()
 {
@@ -33,14 +34,16 @@ int main ()
 	SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
 
 	LoadResources();
+
+	InitialAnimation();
 	// game loop
 	while (!WindowShouldClose())		// run the loop until the user presses ESCAPE or presses the Close button on the window
 	{
 		// drawing
 		BeginDrawing();
 
+		Update();
 		Render();
-
 		
 		// end the frame and get ready for the next one  (display frame, poll input, etc...)
 		EndDrawing();
@@ -50,6 +53,12 @@ int main ()
 	// unload our texture so it can be cleaned up
 	UnloadTexture(wabbit);
 	UnloadResources();
+
+	for(float i = 1; i > 0; i -= 0.20f){
+		BeginDrawing();
+		SetWindowOpacity(i);
+		EndDrawing();
+	}
 
 	// destroy the window and cleanup the OpenGL context
 	CloseWindow();

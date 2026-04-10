@@ -8,15 +8,6 @@ Color windowsPurple = (Color){ 24, 0, 83, 255 };
 
 Color defaultBackgroundColor = (Color){ 24, 0, 83, 0 };
 
-struct ProgramRectangle {
-    int x;
-    int y;
-    int width;
-    int height;
-    Color backgroundColor;
-    char *label;
-    char *command;
-};
 
 float horizontalMargin, verticalMargin;
 
@@ -29,6 +20,31 @@ int changeBackgroundColor(Color newColor)
 Font SegoeUI;
 
 Panel mainPanel;
+
+void InitialAnimation(){
+    for(float i = 1; i > 0; i -= 0.15f){
+        BeginDrawing();
+        SetWindowOpacity(1-i);
+        ClearBackground(defaultBackgroundColor);
+        EndDrawing();
+    }
+    SetWindowOpacity(1);
+    for(float i = 0; i < 1; i += 0.15f){
+        Color loadingWhite = (Color){ 255, 255, 255, 255.0f * i};
+        BeginDrawing();
+        ClearBackground(defaultBackgroundColor);
+        DrawTextEx(SegoeUI,"Start", (Vector2){ horizontalMargin, 60 }, 90, 2, loadingWhite);
+        EndDrawing();
+    }
+
+    for(float i = 0.5; i > 0; i -= 0.07f){
+        BeginDrawing();
+        ClearBackground(defaultBackgroundColor);
+        DrawTextEx(SegoeUI,"Start", (Vector2){ horizontalMargin, 60 }, 90, 2, WHITE);
+        mainPanel.Draw(i);
+        EndDrawing();
+    }
+}
 
 void Render()
 {
@@ -55,8 +71,8 @@ void LoadResources()
     tileMargin = 5;
 
     mainPanel = Panel(horizontalMargin, verticalMargin, GetScreenWidth() - 2 * horizontalMargin, GetScreenHeight() - 2 * verticalMargin);
-    Tile desktop = Tile(0, 0, 2, 1, (Color){ 0, 120, 215, 255 }, "Desktop", "");
-    Tile mail = Tile(0, 1, 1, 1, (Color){ 0, 120, 215, 255 }, "Mail", "");
+    Tile *desktop = new Tile(0, 0, 2, 1, (Color){ 0, 120, 215, 255 }, "Desktop", "");
+    Tile *mail = new Tile(0, 1, 1, 1, (Color){ 0, 120, 215, 255 }, "Mail", "");
     mainPanel.add(desktop);
     mainPanel.add(mail);
 
@@ -67,4 +83,7 @@ void LoadResources()
 void UnloadResources()
 {
     UnloadFont(SegoeUI);
+    for (Tile* tileptr : mainPanel.tiles) {
+        delete tileptr;
+    }
 }
