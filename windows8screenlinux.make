@@ -118,14 +118,14 @@ endif
 GENERATED :=
 OBJECTS :=
 
-GENERATED += $(OBJDIR)/inputcontroller.o
+GENERATED += $(OBJDIR)/graphic-objects.o
 GENERATED += $(OBJDIR)/main.o
+GENERATED += $(OBJDIR)/opentasks.o
 GENERATED += $(OBJDIR)/rendering.o
-GENERATED += $(OBJDIR)/tilerenderer.o
-OBJECTS += $(OBJDIR)/inputcontroller.o
+OBJECTS += $(OBJDIR)/graphic-objects.o
 OBJECTS += $(OBJDIR)/main.o
+OBJECTS += $(OBJDIR)/opentasks.o
 OBJECTS += $(OBJDIR)/rendering.o
-OBJECTS += $(OBJDIR)/tilerenderer.o
 
 # Rules
 # #############################################
@@ -189,18 +189,18 @@ endif
 # File Rules
 # #############################################
 
-$(OBJDIR)/inputcontroller.o: src/inputcontroller.c
+$(OBJDIR)/graphic-objects.o: src/engine/graphic-objects.cpp
 	@echo "$(notdir $<)"
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/main.o: src/main.c
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/rendering.o: src/engine/rendering.cpp
 	@echo "$(notdir $<)"
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/rendering.o: src/rendering.c
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/main.o: src/main.cpp
 	@echo "$(notdir $<)"
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/tilerenderer.o: src/tilerenderer.c
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/opentasks.o: src/opentasks.cpp
 	@echo "$(notdir $<)"
-	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 
 -include $(OBJECTS:%.o=%.d)
 ifneq (,$(PCH))
