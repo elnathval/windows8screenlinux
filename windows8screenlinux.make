@@ -118,9 +118,11 @@ endif
 GENERATED :=
 OBJECTS :=
 
+GENERATED += $(OBJDIR)/inputcontroller.o
 GENERATED += $(OBJDIR)/main.o
 GENERATED += $(OBJDIR)/rendering.o
 GENERATED += $(OBJDIR)/tilerenderer.o
+OBJECTS += $(OBJDIR)/inputcontroller.o
 OBJECTS += $(OBJDIR)/main.o
 OBJECTS += $(OBJDIR)/rendering.o
 OBJECTS += $(OBJDIR)/tilerenderer.o
@@ -187,6 +189,9 @@ endif
 # File Rules
 # #############################################
 
+$(OBJDIR)/inputcontroller.o: src/inputcontroller.c
+	@echo "$(notdir $<)"
+	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/main.o: src/main.c
 	@echo "$(notdir $<)"
 	$(SILENT) $(CC) $(ALL_CFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"

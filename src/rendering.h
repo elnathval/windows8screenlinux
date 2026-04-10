@@ -6,3 +6,7 @@ extern Color defaultBackgroundColor;
 
 int changeBackgroundColor(Color newColor);
 void Render();
+void LoadResources();
+void UnloadResources();
+
+extern int horizontalMargin, verticalMargin, tileSize, tileMargin;

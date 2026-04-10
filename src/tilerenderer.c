@@ -12,13 +12,8 @@ struct ProgramRectangle {
     char *command;
 };
 
-struct ProgramRectangle appArray[10] = {
-    {0,0,2,1, WHITE, "Desktop", ""},
-    {0,1,1,1, LIGHTGRAY, "Chrome", "google-chrome"}
-};
-
-
-struct Tile {
+struct Tile
+{
     int x;
     int y;
     int width;
@@ -27,16 +22,16 @@ struct Tile {
     char *label;
     char *command;
 };
+
+struct ProgramRectangle appArray[10] = {
+    {0,0,2,1, WHITE, "Desktop", ""},
+    {0,1,1,1, LIGHTGRAY, "Chrome", "google-chrome"}
+};
+
     
 struct Tile tiles[10];
 
-void GetTiles(){
-    int horizontalMargin = GetScreenWidth() * 0.1;
-    int verticalMargin = GetScreenHeight() * 0.2;
-    int tileSize = GetScreenHeight() * 0.7 / 4;
-    int tileMargin = 5;
-
-    
+void GetTiles(){ 
 
     for (int i = 0; i < 10; i++)
     {
@@ -45,7 +40,12 @@ void GetTiles(){
         int tileY = verticalMargin + tileSize * rect.y + tileMargin;
 
         tiles[i] = (struct Tile){tileX, tileY, rect.width * (tileSize - 2 * tileMargin), rect.height * (tileSize - 2 * tileMargin), rect.backgroundColor, rect.label, rect.command};
-        printf("Tile %d de nombre %s", i, tiles[i].label);
     }
 
+}
+
+void RenderTile(struct Tile tile, Font font)
+{
+    DrawRectangle(tile.x, tile.y, tile.width, tile.height, tile.backgroundColor);
+    DrawTextEx(font, tile.label, (Vector2){tile.x + 10, tile.y + 10}, 20, 2, WHITE);
 }

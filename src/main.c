@@ -22,13 +22,17 @@ int main ()
 	InitWindow(800, 600, "Start Menu");
 
 	// Utility function from resource_dir.h to find the resources folder and set it as the current working directory so we can load from it
-	//SearchAndSetResourceDir("resources");
+	SearchAndSetResourceDir("resources");
 
 	// Load a texture from the resources directory
 	Texture wabbit = LoadTexture("wabbit_alpha.png");
 	
 
+
 	SetWindowState(FLAG_FULLSCREEN_MODE);
+	SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+
+	LoadResources();
 	// game loop
 	while (!WindowShouldClose())		// run the loop until the user presses ESCAPE or presses the Close button on the window
 	{
@@ -46,6 +50,7 @@ int main ()
 	// cleanup
 	// unload our texture so it can be cleaned up
 	UnloadTexture(wabbit);
+	UnloadResources();
 
 	// destroy the window and cleanup the OpenGL context
 	CloseWindow();
