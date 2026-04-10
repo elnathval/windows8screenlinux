@@ -11,7 +11,7 @@ by Jeffery Myers is marked with CC0 1.0. To view a copy of this license, visit h
 
 #include "resource_dir.h"	// utility header for SearchAndSetResourceDir
 
-#include "rendering.h"		// header for our rendering code
+#include "engine/rendering.h"		// header for our rendering code
 
 int main ()
 {
@@ -39,7 +39,6 @@ int main ()
 		// drawing
 		BeginDrawing();
 
-		
 		Render();
 
 		

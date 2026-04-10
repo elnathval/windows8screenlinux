@@ -1,8 +1,8 @@
 #include "raylib.h"
 #include "resource_dir.h"
-#include "tilerenderer.h"
 #include <stdio.h>
-#include "inputcontroller.h"
+#include "graphic-objects.h"
+
 
 Color windowsPurple = (Color){ 24, 0, 83, 255 };
 
@@ -18,7 +18,7 @@ struct ProgramRectangle {
     char *command;
 };
 
-int horizontalMargin, verticalMargin, tileSize, tileMargin;
+float horizontalMargin, verticalMargin;
 
 int changeBackgroundColor(Color newColor)
 {
@@ -28,6 +28,8 @@ int changeBackgroundColor(Color newColor)
 
 Font SegoeUI;
 
+Panel mainPanel;
+
 void Render()
 {
     
@@ -36,40 +38,33 @@ void Render()
 	// draw some text using the default font
 	DrawTextEx(SegoeUI,"Start", (Vector2){ horizontalMargin, 60 }, 90, 2, WHITE);
 
-    DrawRectangle(horizontalMargin, GetScreenHeight() - 100, 50, 50, WHITE);
+    DrawRectangle(horizontalMargin, GetScreenHeight() - 100, 50, 50, WHITE); 
 
-
-    GetTiles();    
-    struct Tile *programTiles = tiles;
-    struct Tile clicked = clickedTile;
-    
-    if (programTiles == NULL) {
-        return;
-    }
-    for (int i = 0; i < 2; i++) {
-        if (clicked.x == programTiles[i].x && clicked.y == programTiles[i].y) {
-            DrawRectangle(programTiles[i].x, programTiles[i].y, programTiles[i].width, programTiles[i].height, RED);
-        } else {
-            DrawRectangle(programTiles[i].x, programTiles[i].y, programTiles[i].width, programTiles[i].height, programTiles[i].backgroundColor);
-        }
-        DrawRectangle(programTiles[i].x, programTiles[i].y, programTiles[i].width, programTiles[i].height, programTiles[i].backgroundColor);
-    }
+    mainPanel.Draw();
 
 }
 
 void LoadResources()
 {
-    // Load the font we want to use for drawing text
     SegoeUI = LoadFontEx("SegoeUIVF.ttf", 90, NULL, 0);
+
+    // Load the font we want to use for drawing text
     horizontalMargin = GetScreenWidth() * 0.1;
     verticalMargin = GetScreenHeight() * 0.2;
     tileSize = GetScreenHeight() * 0.7 / 4;
     tileMargin = 5;
+
+    mainPanel = Panel(horizontalMargin, verticalMargin, GetScreenWidth() - 2 * horizontalMargin, GetScreenHeight() - 2 * verticalMargin);
+    Tile desktop = Tile(0, 0, 2, 1, (Color){ 0, 120, 215, 255 }, "Desktop", "");
+    Tile mail = Tile(0, 1, 1, 1, (Color){ 0, 120, 215, 255 }, "Mail", "");
+    mainPanel.add(desktop);
+    mainPanel.add(mail);
+
+    mainPanel.font = SegoeUI;
 }
 
 
 void UnloadResources()
 {
-    
     UnloadFont(SegoeUI);
 }
