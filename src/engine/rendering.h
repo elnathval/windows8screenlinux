@@ -7,6 +7,7 @@ extern Color defaultBackgroundColor;
 
 int changeBackgroundColor(Color newColor);
 void InitialAnimation();
+void FinalAnimation();
 void Render();
 void LoadResources();
 void UnloadResources();

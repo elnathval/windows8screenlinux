@@ -37,11 +37,13 @@ void InitialAnimation(){
         EndDrawing();
     }
 
-    for(float i = 0.5; i > 0; i -= 0.07f){
+    for(float i = 0.5; i > 0; i -= 0.15f * (i + 0.015f)){
+        Color loadingWhite = (Color){ 255, 255, 255, 255.0f * (1 - 2*i)};
         BeginDrawing();
         ClearBackground(defaultBackgroundColor);
         DrawTextEx(SegoeUI,"Start", (Vector2){ horizontalMargin, 60 }, 90, 2, WHITE);
         mainPanel.Draw(i);
+        DrawRectangle(horizontalMargin, GetScreenHeight() - 100, 50, 50, loadingWhite); 
         EndDrawing();
     }
 }
@@ -71,8 +73,8 @@ void LoadResources()
     tileMargin = 5;
 
     mainPanel = Panel(horizontalMargin, verticalMargin, GetScreenWidth() - 2 * horizontalMargin, GetScreenHeight() - 2 * verticalMargin);
-    Tile *desktop = new Tile(0, 0, 2, 1, (Color){ 0, 120, 215, 255 }, "Desktop", "");
-    Tile *mail = new Tile(0, 1, 1, 1, (Color){ 0, 120, 215, 255 }, "Mail", "");
+    Tile *desktop = new Tile(0, 0, 2, 1, (Color){ 0, 120, 215, 255 }, "Desktop", "desktop");
+    Tile *mail = new Tile(0, 1, 1, 1, (Color){ 0, 120, 215, 255 }, "Mail", "thunderbird");
     mainPanel.add(desktop);
     mainPanel.add(mail);
 
@@ -86,4 +88,13 @@ void UnloadResources()
     for (Tile* tileptr : mainPanel.tiles) {
         delete tileptr;
     }
+}
+
+void FinalAnimation(){
+    for(float i = 1; i > 0; i -= 0.20f){
+		BeginDrawing();
+        ClearBackground(defaultBackgroundColor);
+		SetWindowOpacity(i);
+		EndDrawing();
+	}
 }

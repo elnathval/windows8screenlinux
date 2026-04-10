@@ -37,11 +37,11 @@ int main ()
 
 	InitialAnimation();
 	// game loop
-	while (!WindowShouldClose())		// run the loop until the user presses ESCAPE or presses the Close button on the window
+	while (!WindowShouldClose() && !openingTask)		// run the loop until the user presses ESCAPE or presses the Close button on the window
 	{
 		// drawing
 		BeginDrawing();
-
+		
 		Update();
 		Render();
 		
@@ -54,11 +54,7 @@ int main ()
 	UnloadTexture(wabbit);
 	UnloadResources();
 
-	for(float i = 1; i > 0; i -= 0.20f){
-		BeginDrawing();
-		SetWindowOpacity(i);
-		EndDrawing();
-	}
+	FinalAnimation();
 
 	// destroy the window and cleanup the OpenGL context
 	CloseWindow();
