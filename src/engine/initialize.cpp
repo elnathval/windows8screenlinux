@@ -10,7 +10,7 @@ void DefaultTileConfig() {
     Tile *desktop = new Tile(2, 0, 2, 1, (Color){ 0, 120, 215, 255 }, "Desktop", "desktop");
     Tile *calendar = new Tile(0, 1, 2, 1, (Color){ 138, 57, 191, 255 }, "Calendar", "xdg-open webcal:");
     Tile *explorer = new Tile(2, 1, 1, 1, (Color){ 57, 191, 153, 255 }, "Files", "xdg-open ~");
-    Tile *finances = new Tile(0, 2, 2, 1, (Color){ 30, 117, 38, 255 }, "Finances", "xdg-open https://www.google.com/finance/");
+    Tile *finances = new Tile(0, 2, 2, 1, (Color){ 30, 117, 38, 255 }, "Finance", "xdg-open https://www.google.com/finance/");
     Tile *browser = new Tile(2, 2, 1, 1, (Color){ 47, 121, 181, 255 }, "Browser", "xdg-open https://www.google.com/");
     mainPanel.add(desktop);
     mainPanel.add(mail);

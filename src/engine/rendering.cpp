@@ -66,6 +66,19 @@ void LoadResources()
 {
     SegoeUI = LoadFontEx("SegoeUIVF.ttf", 90, NULL, 0);
 
+    Texture mail = LoadTexture("mail.png");
+    Texture calendar = LoadTexture("calendar.png");
+    Texture finance = LoadTexture("finance.png");
+    Texture browser = LoadTexture("ie.png");
+    Texture explorer = LoadTexture("explorer.png");
+
+    textureMap["Mail"] = mail;
+    textureMap["Calendar"] = calendar;
+    textureMap["Finance"] = finance;
+    textureMap["Browser"] = browser;
+    textureMap["Files"] = explorer;
+
+
     // Load the font we want to use for drawing text
     horizontalMargin = GetScreenWidth() * 0.1;
     verticalMargin = GetScreenHeight() * 0.2;
@@ -83,6 +96,9 @@ void UnloadResources()
     UnloadFont(SegoeUI);
     for (Tile* tileptr : mainPanel.tiles) {
         delete tileptr;
+    }
+    for (std::pair<std::string, Texture> entry : textureMap) {
+        UnloadTexture(entry.second);
     }
 }
 

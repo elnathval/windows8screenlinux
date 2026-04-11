@@ -1,9 +1,11 @@
 #include "raylib.h"
 #include <string>
 #include <vector>
+#include <map>
 
 extern float tileSize;
 extern float tileMargin;
+extern std::map<std::string, Texture> textureMap;
 
 class Tile {
 public:
