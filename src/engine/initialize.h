@@ -1,0 +1,2 @@
+void DefaultTileConfig();
+void LoadTiles();

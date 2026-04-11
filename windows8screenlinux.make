@@ -119,10 +119,12 @@ GENERATED :=
 OBJECTS :=
 
 GENERATED += $(OBJDIR)/graphic-objects.o
+GENERATED += $(OBJDIR)/initialize.o
 GENERATED += $(OBJDIR)/main.o
 GENERATED += $(OBJDIR)/opentasks.o
 GENERATED += $(OBJDIR)/rendering.o
 OBJECTS += $(OBJDIR)/graphic-objects.o
+OBJECTS += $(OBJDIR)/initialize.o
 OBJECTS += $(OBJDIR)/main.o
 OBJECTS += $(OBJDIR)/opentasks.o
 OBJECTS += $(OBJDIR)/rendering.o
@@ -190,6 +192,9 @@ endif
 # #############################################
 
 $(OBJDIR)/graphic-objects.o: src/engine/graphic-objects.cpp
+	@echo "$(notdir $<)"
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/initialize.o: src/engine/initialize.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/rendering.o: src/engine/rendering.cpp

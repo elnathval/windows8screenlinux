@@ -73,11 +73,7 @@ void LoadResources()
     tileMargin = 5;
 
     mainPanel = Panel(horizontalMargin, verticalMargin, GetScreenWidth() - 2 * horizontalMargin, GetScreenHeight() - 2 * verticalMargin);
-    Tile *desktop = new Tile(0, 0, 2, 1, (Color){ 0, 120, 215, 255 }, "Desktop", "desktop");
-    Tile *mail = new Tile(0, 1, 1, 1, (Color){ 0, 120, 215, 255 }, "Mail", "thunderbird");
-    mainPanel.add(desktop);
-    mainPanel.add(mail);
-
+    
     mainPanel.font = SegoeUI;
 }
 

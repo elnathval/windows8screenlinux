@@ -9,11 +9,12 @@ void Update() {
 
     for (Tile* tileptr : mainPanel.tiles) {
         if (tileptr->isLeftClicked()) {
-
+            //Default settings
             if (tileptr->command == "desktop") {
                 openingTask = true;
                 
-            } else {
+            }
+            else {
                 if(fork() == 0) {
                     system(tileptr->command.c_str());
                 }

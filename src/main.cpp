@@ -13,6 +13,7 @@ by Jeffery Myers is marked with CC0 1.0. To view a copy of this license, visit h
 
 #include "engine/rendering.h"		// header for our rendering code
 #include "opentasks.h"		// source file for our game logic code (for now just input handling and updating the state of the tiles)
+#include "engine/initialize.h"	// source file for our initialization code (for now just loading the tile configuration from a file or setting up a default one if the file doesn't exist)
 
 int main ()
 {
@@ -34,6 +35,7 @@ int main ()
 	SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
 
 	LoadResources();
+	LoadTiles();
 
 	InitialAnimation();
 	// game loop
