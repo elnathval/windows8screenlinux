@@ -25,6 +25,14 @@ public:
     
 };
 
+class ListItem {
+    public:
+    std::string label;
+    Texture icon;
+    std::string command;
+    ListItem(std::string label, Texture icon, std::string command);
+};
+
 class Panel {
 public:
     float x;
@@ -42,4 +50,5 @@ public:
     void Draw();
     void Draw(float offset);
     void Move(float newX, float newY);
+    void DrawList();
 };

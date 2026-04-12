@@ -31,7 +31,13 @@ bool Tile::isLeftClicked() {
 std::vector<Texture> textures;
 std::map<std::string, Texture> textureMap;
 
+std::map<std::string, ListItem> listItemMap;
 
+ListItem::ListItem(std::string label, Texture icon, std::string command) {
+    this->label = label;
+    this->icon = icon;
+    this->command = command;
+}
 
 
 

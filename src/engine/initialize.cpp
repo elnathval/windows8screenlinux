@@ -2,6 +2,7 @@
 #include "rendering.h"
 #include <iostream>
 #include <stdlib.h>
+#include <thread>
 
 
 
@@ -93,4 +94,51 @@ void LoadTiles(){
     tile_config.close();
 
 }
+
+void ParseApplicationFile(std::string filePath) {
+    std::ifstream appFile(filePath);
+    if (!appFile.is_open()) {
+        std::cout<<"Failed to open application file: "<<filePath<<std::endl;
+        return;
+    }
+    std::string line;
+    std::string name;
+    std::string exec;
+    std::string icon;
+    while (std::getline(appFile, line)) {
+        if (line.rfind("Name=", 0) == 0) {
+            name = line.substr(5);
+        } else if (line.rfind("Exec=", 0) == 0) {
+            exec = line.substr(5);
+        } else if (line.rfind("Icon=", 0) == 0) {
+            icon = line.substr(5);
+        }
+    }
+    appFile.close();
+    if (name.empty() || exec.empty()) {
+        std::cout<<"Invalid application file: "<<filePath<<std::endl;
+        return;
+    }
+    std::cout<<"Parsed application: "<<name<<" with command: "<<exec<<" and icon: "<<icon<<std::endl;
+}
+
+void GetApplications() {
+    
+    FilePathList rootApplications = LoadDirectoryFiles("/usr/share/applications");
+    FilePathList userApplications = LoadDirectoryFiles((std::string(getenv("HOME")) + "/.local/share/applications").c_str());
+    FilePathList snapApplications = LoadDirectoryFiles("/var/lib/snapd/desktop/applications");
+    FilePathList allApplications;
+    for (unsigned int i = 0; i < rootApplications.count; i++) {
+        std::thread(ParseApplicationFile, rootApplications.paths[i]).detach();
+    }
+    for (unsigned int i = 0; i < userApplications.count; i++) {
+        std::thread(ParseApplicationFile, userApplications.paths[i]).detach();
+    }
+    for (unsigned int i = 0; i < snapApplications.count; i++) {
+        std::thread(ParseApplicationFile, snapApplications.paths[i]).detach();
+    }
+
+
+}
+
 

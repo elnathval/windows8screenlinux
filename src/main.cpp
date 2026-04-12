@@ -34,10 +34,14 @@ int main ()
 	SetWindowState(FLAG_FULLSCREEN_MODE);
 	SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
 
+	GetApplications();
+
 	LoadResources();
 	LoadTiles();
 
 	InitialAnimation();
+
+	
 	// game loop
 	while (!WindowShouldClose() && !openingTask)		// run the loop until the user presses ESCAPE or presses the Close button on the window
 	{
