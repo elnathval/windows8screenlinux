@@ -11,13 +11,17 @@ by Jeffery Myers is marked with CC0 1.0. To view a copy of this license, visit h
 
 #include "resource_dir.h"	// utility header for SearchAndSetResourceDir
 
+#include "engine/rendering.h"		// header for our rendering code
+#include "opentasks.h"		// source file for our game logic code (for now just input handling and updating the state of the tiles)
+#include "engine/initialize.h"	// source file for our initialization code (for now just loading the tile configuration from a file or setting up a default one if the file doesn't exist)
+
 int main ()
 {
 	// Tell the window to use vsync and work on high DPI displays
 	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
 
 	// Create the window and OpenGL context
-	InitWindow(800, 600, "Hello Raylib");
+	InitWindow(800, 600, "Start Menu");
 
 	// Utility function from resource_dir.h to find the resources folder and set it as the current working directory so we can load from it
 	SearchAndSetResourceDir("resources");
@@ -25,20 +29,28 @@ int main ()
 	// Load a texture from the resources directory
 	Texture wabbit = LoadTexture("wabbit_alpha.png");
 	
+
+
+	SetWindowState(FLAG_FULLSCREEN_MODE);
+	SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+
+	LoadResources();
+
+	GetApplications();
+	
+	LoadTiles();
+
+	InitialAnimation();
+
+	
 	// game loop
-	while (!WindowShouldClose())		// run the loop until the user presses ESCAPE or presses the Close button on the window
+	while (!WindowShouldClose() && !openingTask)		// run the loop until the user presses ESCAPE or presses the Close button on the window
 	{
 		// drawing
 		BeginDrawing();
-
-		// Setup the back buffer for drawing (clear color and depth buffers)
-		ClearBackground(BLACK);
-
-		// draw some text using the default font
-		DrawText("Hello Raylib", 200,200,20,WHITE);
-
-		// draw our texture to the screen
-		DrawTexture(wabbit, 400, 200, WHITE);
+		
+		Update();
+		Render();
 		
 		// end the frame and get ready for the next one  (display frame, poll input, etc...)
 		EndDrawing();
@@ -47,6 +59,9 @@ int main ()
 	// cleanup
 	// unload our texture so it can be cleaned up
 	UnloadTexture(wabbit);
+	UnloadResources();
+
+	FinalAnimation();
 
 	// destroy the window and cleanup the OpenGL context
 	CloseWindow();

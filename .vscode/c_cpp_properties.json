@@ -1,11 +1,9 @@
 {
     "configurations": [
         {
-            "name": "Win32",
+            "name": "linux-gcc-x64",
             "includePath": [
-                "${workspaceFolder}/build/external/raylib-master/src/**",
-                "${workspaceFolder}/include/**",
-                "${workspaceFolder}/src/**"
+                "${workspaceFolder}/**"
             ],
             "defines": [
                 "_DEBUG",
@@ -14,9 +12,10 @@
                 "GRAPHICS_API_OPENGL_33",
                 "PLATFORM_DESKTOP"
             ],
-            "cStandard": "c17",
-            "cppStandard": "c++17",
-            "intelliSenseMode": "gcc-x64"
+            "cStandard": "${default}",
+            "cppStandard": "${default}",
+            "intelliSenseMode": "linux-gcc-x64",
+            "compilerPath": "/usr/bin/gcc"
         },
         {
             "name": "Mac",
@@ -54,11 +53,10 @@
                 "GRAPHICS_API_OPENGL_33",
                 "PLATFORM_DESKTOP"
             ],
-            "compilerPath": "/usr/bin/clang",
+            "compilerPath": "/usr/bin/g++",
             "cStandard": "c17",
             "cppStandard": "c++17",
-            "intelliSenseMode": "clang-x64"
-
+            "intelliSenseMode": "windows-clang-x64"
         }
     ],
     "version": 4
