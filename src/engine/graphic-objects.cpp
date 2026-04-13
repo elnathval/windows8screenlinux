@@ -9,100 +9,70 @@ float tileSize;
 float tileMargin;
 int fontSize = 20;
 
-Tile::Tile(int x, int y, int width, int height, Color backgroundColor, std::string label, std::string command) {
-    this->gridX = x;
-    this->gridY = y;
-    this->width = width;
-    this->height = height;
-    this->backgroundColor = backgroundColor;
-    this->label = label;
-    this->command = command;
-}
-
-void Tile::changeColor(Color newColor) {
-    this->backgroundColor = newColor;
-}
+std::map<std::string, Texture> textureMap;
 
 bool Tile::isLeftClicked() {
     Vector2 mousePosition = GetMousePosition();
-    return CheckCollisionPointRec(mousePosition, (Rectangle){ this->realX, this->realY, this->width * tileSize - 2 * tileMargin, this->height * tileSize - 2 * tileMargin }) && IsMouseButtonDown(MOUSE_LEFT_BUTTON);
+    float screenX = this->parentPanel->x + tileMargin + tileSize * this->gridX;
+    float screenY = this->parentPanel->y + tileMargin + tileSize * this->gridY;
+    return CheckCollisionPointRec(mousePosition, (Rectangle){ screenX, screenY, this->width * tileSize - 2 * tileMargin, this->height * tileSize - 2 * tileMargin }) && IsMouseButtonDown(MOUSE_LEFT_BUTTON);
 }
 
-std::vector<Texture> textures;
-std::map<std::string, Texture> textureMap;
+void Tile::Draw(float offsetX, float offsetY) {
+    float panelX = tileMargin + tileSize * this->gridX;
+    float screenX = panelX + offsetX;
+    float panelY = tileMargin + tileSize * this->gridY;
+    float screenY = panelY + offsetY;
+    float tileWidth = this->width * tileSize - 2 * tileMargin;
+    float tileHeight = this->height * tileSize - 2 * tileMargin;
+    Color color = (Color){ backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a * opacity * parentPanel->opacity };
+    Color textColor = (Color){ 255, 255, 255, 255 * opacity * parentPanel->opacity };
+    
+    DrawRectangle(screenX, screenY, tileWidth, tileHeight, color);
+    DrawTextEx(this->parentPanel->font, this->label.c_str(), (Vector2){ screenX + tileMargin, screenY + tileHeight - tileMargin - fontSize }, fontSize, 1, textColor);
 
-std::map<std::string, ListItem> listItemMap;
-
-ListItem::ListItem(std::string label, Texture icon, std::string command) {
-    this->label = label;
-    this->icon = icon;
-    this->command = command;
-}
-
-
-
-Panel::Panel() {
-    this->x = 0;
-    this->y = 0;
-    this->width = 0;
-    this->height = 0;
-}
-
-Panel::Panel(float x, float y, float width, float height) {
-    this->x = x;
-    this->y = y;
-    this->width = width;
-    this->height = height;
-}
-
-Panel::Panel(float x, float y) {
-    this->x = x;
-    this->y = y;
-}
-void Panel::add(Tile* tileptr) {
-    tileptr->realX = this->x + tileptr->gridX * tileSize + tileMargin;
-    tileptr->realY = this->y + tileptr->gridY * tileSize + tileMargin;
-    this->tiles.push_back(tileptr);
-}
-void Panel::Draw() {
-    for (Tile* tileptr : tiles) {
-        Tile tile = *tileptr;
-        float screenX = tile.realX;
-        float screenY = tile.realY;
-        
-        DrawRectangle(screenX, screenY, tile.width * tileSize - 2 * tileMargin, tile.height * tileSize - 2 * tileMargin, tile.backgroundColor);
-        DrawTextEx(this->font, tile.label.c_str(), (Vector2){ screenX + tileMargin, screenY + tile.height * tileSize - 3 * tileMargin - fontSize }, fontSize, 1, WHITE);
-
-        if (textureMap.find(tile.label) != textureMap.end())
-        {
-            float iconSize;
-            if(tile.width > tile.height){
-                iconSize = (tile.height * tileSize - 2 * tileMargin)/1.5f;
-            } else {
-                iconSize = (tile.width * tileSize - 2 * tileMargin)/1.5f;
-            }
-            DrawTextureEx(textureMap[tile.label], (Vector2){ screenX + (tile.width * tileSize / 2) - iconSize / 2, screenY + (tile.height * tileSize / 2) - iconSize / 2 }, 0, iconSize / 1000,WHITE);
+    if (textureMap.find(this->label) != textureMap.end())
+    {
+        float iconSize;
+        if(this->width > this->height){
+            iconSize = (tileHeight)/1.5f;
+        } else {
+            iconSize = (tileWidth)/1.5f;
         }
+        DrawTextureEx(textureMap[this->label], (Vector2){ screenX + (tileWidth / 2) - iconSize / 2, screenY + (tileHeight / 2) - iconSize / 2 }, 0, iconSize / 1000, (Color){ 255, 255, 255, 255 * opacity * parentPanel->opacity });
     }
 }
-void Panel::Draw(float offset) {    //FOr the start animation
+
+
+void Panel::Draw(float offsetX, float offsetY) {
+
     for (Tile* tileptr : tiles) {
-        Tile tile = *tileptr;
-        float screenX = tile.realX + offset * 2 * tileSize;
-        float screenY = tile.realY + offset * tileSize;
-
-        DrawRectangle(screenX, screenY, tile.width * tileSize - 2 * tileMargin, tile.height * tileSize - 2 * tileMargin, (Color){ tile.backgroundColor.r, tile.backgroundColor.g, tile.backgroundColor.b, tile.backgroundColor.a * (1 - 2 * offset) });
-        DrawTextEx(this->font, tile.label.c_str(), (Vector2){ screenX + tileMargin, (screenY + tile.height * tileSize - 3 * tileMargin - fontSize)}, fontSize, 1, (Color){ 255, 255, 255, 255 * (1 - 2 * offset) });
-
-        if (textureMap.find(tile.label) != textureMap.end())
-        {
-            float iconSize;
-            if(tile.width > tile.height){
-                iconSize = (tile.height * tileSize - 2 * tileMargin)/1.5f;
-            } else {
-                iconSize = (tile.width * tileSize - 2 * tileMargin)/1.5f;
-            }
-            DrawTextureEx(textureMap[tile.label], (Vector2){ screenX + (tile.width * tileSize / 2) - iconSize / 2, screenY + (tile.height * tileSize / 2) - iconSize / 2 }, 0, iconSize / 1000,WHITE);
-        }
+        tileptr->Draw(offsetX + this->x, offsetY + this->y);
     }
+}
+
+
+void UserControl::Draw(float offsetX, float offsetY)
+{
+    Color tint = (Color){ 255, 255, 255, 255 * opacity };
+    DrawTextureEx((this->icon), (Vector2){ this->x + offsetX, this->y + offsetY }, 0, width/icon.width ,tint);
+}
+
+void Page::Draw()
+{
+    for (Panel* panelptr : panels) {
+        panelptr->Draw(this->x, this->y);
+    }
+    for (UserControl* userControlPtr : userControls) {
+        userControlPtr->Draw(this->x, this->y);
+    }
+    for (Label* labelPtr : labels) {
+        labelPtr->Draw(this->x, this->y);
+    }
+}
+
+void Label::Draw(float offsetX, float offsetY)
+{
+    Color textColor = (Color){ color.r, color.g, color.b, color.a * opacity };
+    DrawTextEx(this->font, this->text.c_str(), (Vector2){ this->x + offsetX, this->y + offsetY }, this->fontSize, 1, textColor);
 }

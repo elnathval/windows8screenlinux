@@ -13,12 +13,12 @@ void DefaultTileConfig() {
     Tile *explorer = new Tile(2, 1, 1, 1, (Color){ 57, 191, 153, 255 }, "Files", "xdg-open ~");
     Tile *finances = new Tile(0, 2, 2, 1, (Color){ 30, 117, 38, 255 }, "Finance", "xdg-open https://www.google.com/finance/");
     Tile *browser = new Tile(2, 2, 1, 1, (Color){ 47, 121, 181, 255 }, "Browser", "xdg-open https://www.google.com/");
-    mainPanel.add(desktop);
-    mainPanel.add(mail);
-    mainPanel.add(calendar);
-    mainPanel.add(explorer);
-    mainPanel.add(finances);
-    mainPanel.add(browser);
+    mainPanel->add(desktop);
+    mainPanel->add(mail);
+    mainPanel->add(calendar);
+    mainPanel->add(explorer);
+    mainPanel->add(finances);
+    mainPanel->add(browser);
 
     char configDir[256];
     snprintf(configDir, sizeof(configDir), "%s/.config/windows8screenlinux", getenv("HOME"));
@@ -32,7 +32,7 @@ void DefaultTileConfig() {
         std::cout<<configDir<<std::endl;
     }
     
-    for (Tile* tileptr : mainPanel.tiles) {
+    for (Tile* tileptr : mainPanel->tiles) {
         tile_config.write((char*)&tileptr->gridX, sizeof(int));
         tile_config.write((char*)&tileptr->gridY, sizeof(int));
         tile_config.write((char*)&tileptr->width, sizeof(int));
@@ -88,7 +88,7 @@ void LoadTiles(){
         delete[] commandBuffer;
 
         Tile* tileptr = new Tile(gridX, gridY, width, height, (Color){ r, g, b, a }, label, command);
-        mainPanel.add(tileptr);
+        mainPanel->add(tileptr);
     }
 
     tile_config.close();

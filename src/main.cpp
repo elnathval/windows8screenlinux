@@ -34,9 +34,10 @@ int main ()
 	SetWindowState(FLAG_FULLSCREEN_MODE);
 	SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
 
-	GetApplications();
-
 	LoadResources();
+
+	GetApplications();
+	
 	LoadTiles();
 
 	InitialAnimation();

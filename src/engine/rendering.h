@@ -13,4 +13,4 @@ void LoadResources();
 void UnloadResources();
 
 extern int horizontalMargin, verticalMargin;
-extern Panel mainPanel;
+extern Panel* mainPanel;

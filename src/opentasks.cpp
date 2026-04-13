@@ -7,7 +7,7 @@ bool openingTask = false;
 void Update() {
     if(!IsWindowFocused()) openingTask = true;
 
-    for (Tile* tileptr : mainPanel.tiles) {
+    for (Tile* tileptr : mainPanel->tiles) {
         if (tileptr->isLeftClicked()) {
             //Default settings
             if (tileptr->command == "desktop") {
