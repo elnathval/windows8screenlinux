@@ -67,6 +67,8 @@ public:
     float width, height; 
     float offsetX, offsetY;
     float opacity = 1.0f;
+    Color backgroundColor = (Color){ 0, 0, 0, 0 };
+
     UserControl(std::string name, Texture icon, int x, int y, int width, int height) {
         this->name = name;
         this->icon = icon;
@@ -75,25 +77,42 @@ public:
         this->width = width;
         this->height = height;
     }
-    void clicked();
+    bool clicked();
+    bool isMouseOver();
     void Draw(float offsetX, float offsetY);
 };
 
 class ListItem {
 public:
     std::string label;
-    Texture icon;
+    Texture icon = { 0 };
     std::string command;
-    ListItem(std::string label, Texture icon, std::string command){
+    Color backgroundColor = (Color){ 0, 0, 0, 0 };
+    Color textColor = (Color){255, 255, 255, 255};
+    int width, height;
+    int gridX, gridY;
+    float opacity = 1.0f;
+    Panel* parentPanel;
+    float offsetX, offsetY;
+
+    ListItem(std::string label, Texture icon, std::string command, int width, int height, int x, int y) {
         this->label = label;
         this->icon = icon;
         this->command = command;
+        this->width = width;
+        this->height = height;
+        this->gridX = x;
+        this->gridY = y;
     };
+
     void Draw(float offsetx, float offsety);
+    bool clicked();
+    bool isMouseOver();
 };
 
 class Panel {
 public:
+    std::string name;
     float x, y, width, height;
     float offsetX, offsetY;
     float opacity = 1.0f;
@@ -117,6 +136,10 @@ public:
     void add(Tile* tileptr){
         tileptr->parentPanel = this;
         this->tiles.push_back(tileptr);
+    };
+    void add(ListItem* listItemPtr){
+        listItemPtr->parentPanel = this;
+        this->listItems.push_back(listItemPtr);
     };
     void Draw(float offsetX, float offsetY);
     void Move(float newX, float newY){

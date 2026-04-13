@@ -23,6 +23,9 @@ Panel* mainPanel;
 Label* startLabel;
 UserControl* downButton;
 
+UserControl* shutdownButton;
+UserControl* searchButton;
+
 Page mainPage("Start", 0, 0);
 
 void InitialAnimation(){
@@ -104,15 +107,21 @@ void LoadResources()
     tileMargin = 5;
 
     Texture downArrow = LoadTexture("downbutton.png");
+    Texture shutdownIcon = LoadTexture("shutdown.png");
+    Texture searchIcon = LoadTexture("search.png");
 
     mainPanel = new Panel(horizontalMargin, verticalMargin, GetScreenWidth() - 2 * horizontalMargin, GetScreenHeight() - 2 * verticalMargin);
     startLabel = new Label("Start", horizontalMargin, 60, WHITE, SegoeUI, 90);
     downButton = new UserControl("Down", downArrow, horizontalMargin, GetScreenHeight() - 100, 50, 50);
+    shutdownButton = new UserControl("Shutdown", shutdownIcon, GetScreenWidth() - 250, 100, 50, 50);
+    searchButton = new UserControl("Search", searchIcon, GetScreenWidth() - 150, 100, 50, 50);
     
     mainPanel->font = SegoeUI;
     mainPage.panels.push_back(mainPanel);
     mainPage.labels.push_back(startLabel);
     mainPage.userControls.push_back(downButton);
+    mainPage.userControls.push_back(shutdownButton);
+    mainPage.userControls.push_back(searchButton);
 }
 
 
