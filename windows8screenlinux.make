@@ -118,11 +118,13 @@ endif
 GENERATED :=
 OBJECTS :=
 
+GENERATED += $(OBJDIR)/geticon.o
 GENERATED += $(OBJDIR)/graphic-objects.o
 GENERATED += $(OBJDIR)/initialize.o
 GENERATED += $(OBJDIR)/main.o
 GENERATED += $(OBJDIR)/opentasks.o
 GENERATED += $(OBJDIR)/rendering.o
+OBJECTS += $(OBJDIR)/geticon.o
 OBJECTS += $(OBJDIR)/graphic-objects.o
 OBJECTS += $(OBJDIR)/initialize.o
 OBJECTS += $(OBJDIR)/main.o
@@ -191,6 +193,9 @@ endif
 # File Rules
 # #############################################
 
+$(OBJDIR)/geticon.o: src/engine/geticon.cpp
+	@echo "$(notdir $<)"
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/graphic-objects.o: src/engine/graphic-objects.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
