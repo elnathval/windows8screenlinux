@@ -1,6 +1,7 @@
 #include "engine/rendering.h"
 #include <iostream>
 #include <unistd.h>
+#include <csignal>
 
 bool openingTask = false;
 
@@ -10,7 +11,14 @@ Panel* shutdownPanel = new Panel(0,0);
 ListItem* shutdownOption;
 ListItem* restartOption;
 
+void killSignal(int){
+    openingTask = true;
+}
+
+
 void Update() {
+    signal(SIGUSR1, killSignal);
+
     if(!IsWindowFocused()) openingTask = true;
 
     for (Tile* tileptr : mainPanel->tiles) {
