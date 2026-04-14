@@ -124,12 +124,14 @@ GENERATED += $(OBJDIR)/initialize.o
 GENERATED += $(OBJDIR)/main.o
 GENERATED += $(OBJDIR)/opentasks.o
 GENERATED += $(OBJDIR)/rendering.o
+GENERATED += $(OBJDIR)/systemsettings.o
 OBJECTS += $(OBJDIR)/geticon.o
 OBJECTS += $(OBJDIR)/graphic-objects.o
 OBJECTS += $(OBJDIR)/initialize.o
 OBJECTS += $(OBJDIR)/main.o
 OBJECTS += $(OBJDIR)/opentasks.o
 OBJECTS += $(OBJDIR)/rendering.o
+OBJECTS += $(OBJDIR)/systemsettings.o
 
 # Rules
 # #############################################
@@ -209,6 +211,9 @@ $(OBJDIR)/main.o: src/main.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/opentasks.o: src/opentasks.cpp
+	@echo "$(notdir $<)"
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/systemsettings.o: src/systemsettings.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 

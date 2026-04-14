@@ -1,0 +1,2 @@
+bool isAlreadyRunning();
+void closeLockFile();

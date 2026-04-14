@@ -14,9 +14,14 @@ by Jeffery Myers is marked with CC0 1.0. To view a copy of this license, visit h
 #include "engine/rendering.h"		// header for our rendering code
 #include "opentasks.h"		// source file for our game logic code (for now just input handling and updating the state of the tiles)
 #include "engine/initialize.h"	// source file for our initialization code (for now just loading the tile configuration from a file or setting up a default one if the file doesn't exist)
+#include "systemsettings.h"
 
 int main ()
 {
+	if(isAlreadyRunning()){
+		return 0;
+	}
+	
 	// Tell the window to use vsync and work on high DPI displays
 	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
 
@@ -65,5 +70,7 @@ int main ()
 
 	// destroy the window and cleanup the OpenGL context
 	CloseWindow();
+
+	closeLockFile();
 	return 0;
 }
