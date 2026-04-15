@@ -49,12 +49,38 @@ void Tile::Draw(float offsetX, float offsetY) {
 
 
 void Panel::Draw(float offsetX, float offsetY) {
+    if(backgroundColor.a > 0){
+        DrawRectangle(offsetX, offsetY, this->width, this->height, backgroundColor);
+    }
 
     for (Tile* tileptr : tiles) {
         tileptr->Draw(offsetX + this->x, offsetY + this->y);
     }
     for (ListItem* listItemPtr : listItems) {
         listItemPtr->Draw(offsetX + this->x, offsetY + this->y);
+    }
+
+    if(isScrollable){
+
+        this->x += GetMouseWheelMove()*50;
+        
+        if(GetMouseWheelMove() == 0){
+            lastScrollValue -= lastScrollValue/3;
+            this->x += lastScrollValue*75;
+        } else {
+            lastScrollValue = GetMouseWheelMove();
+        }
+
+        if(this->x > (this->notScrolledX)){
+            this->x = this->notScrolledX; 
+            lastScrollValue = 0;
+            return;
+        }else if(this->x + this->furthestPointX * tileSize < this->width + this->notScrolledX){
+            this->x = this->notScrolledX +  this->width - this->furthestPointX * tileSize; 
+            lastScrollValue = 0;
+            return;
+        }
+        
     }
 }
 
@@ -105,17 +131,16 @@ void ListItem::Draw(float offsetx, float offsety)
     this->offsetX = offsetx;
     this->offsetY = offsety;
 
-    Color color = (Color){ backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a * opacity };
-    Color text = (Color){ textColor.r, textColor.g, textColor.b, textColor.a * opacity };
+    Color color = (Color){ backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a * opacity * this->parentPanel->opacity };
+    Color text = (Color){ textColor.r, textColor.g, textColor.b, textColor.a * opacity * this->parentPanel->opacity };
 
-    float halfTileSize = tileSize / 2;
-    float screenX = offsetx + this->gridX * tileSize / 2;
-    float screenY = offsety + this->gridY * tileSize / 2;
+    float halfTileSize = tileSize;
+    float screenX = offsetx + this->gridX * tileSize;
+    float screenY = offsety + this->gridY * tileSize * 2 / 3 ;
 
-    std::cout<<screenX<<std::endl;
 
-    DrawRectangle(screenX, screenY, this->width * halfTileSize, this->height * halfTileSize, color);
-    DrawTextEx(this->parentPanel->font, this->label.c_str(), (Vector2){  screenX + 2 * tileMargin, screenY + halfTileSize / 2 - 15 }, 30, 1, text);
+    DrawRectangle(screenX, screenY, this->width * halfTileSize, this->height * halfTileSize/1.5, color);
+    DrawTextEx(this->parentPanel->font, this->label.c_str(), (Vector2){  screenX + 2 * tileMargin, screenY + this->height * halfTileSize / 3 - 15 }, 30, 1, text);
 
     /*if (this->icon.id != 0)
     {
@@ -131,16 +156,14 @@ void ListItem::Draw(float offsetx, float offsety)
 
 bool ListItem::clicked()
 {
-    float screenX = this->offsetX + this->gridX * tileSize / 2;
-    float screenY = this->offsetY + this->gridY * tileSize / 2;
-    std::cout<<screenX<<std::endl;
-    return CheckCollisionPointRec(GetMousePosition(), (Rectangle){ screenX, screenY, this->width * tileSize / 2, this->height * tileSize / 2 }) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
+    float screenX = this->offsetX + this->gridX * tileSize;
+    float screenY = this->offsetY + this->gridY * tileSize * 2 / 3;
+    return CheckCollisionPointRec(GetMousePosition(), (Rectangle){ screenX, screenY, this->width * tileSize, this->height * tileSize * 2 / 3 }) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
 }
 
 bool ListItem::isMouseOver()
 {
-    float screenX = this->offsetX + this->gridX * tileSize / 2;
-    float screenY = this->offsetY + this->gridY * tileSize / 2;
-    std::cout<<screenX<<std::endl;
-    return CheckCollisionPointRec(GetMousePosition(), (Rectangle){ screenX, screenY, this->width * tileSize / 2, this->height * tileSize / 2 });
+    float screenX = this->offsetX + this->gridX * tileSize;
+    float screenY = this->offsetY + this->gridY * tileSize * 2 / 3;
+    return CheckCollisionPointRec(GetMousePosition(), (Rectangle){ screenX, screenY, this->width * tileSize, this->height * tileSize * 2 / 3 });
 }

@@ -14,7 +14,11 @@ ListItem* restartOption;
 void killSignal(int){
     openingTask = true;
 }
-
+ 
+bool showStartScreen = true;
+bool buttonsEnabled = true;
+float offset = 1;
+float lastScrollValue = 0;
 
 void Update() {
     signal(SIGUSR1, killSignal);
@@ -46,8 +50,10 @@ void Update() {
         }
         
         if(usercontroptr->clicked()){
-            if(usercontroptr->name == "Down"){
-                //openingTask = true;
+            if(usercontroptr->name == "Down" && showStartScreen){
+                offset = 0;
+                showStartScreen = false;
+                buttonsEnabled = false;
             } else if (usercontroptr->name == "Shutdown"){
                 
                 delete shutdownPanel;
@@ -56,7 +62,8 @@ void Update() {
                 (shutdownMenu) ? shutdownMenu = false : shutdownMenu = true;
 
                 if(shutdownMenu){
-                    shutdownPanel = new Panel(GetScreenWidth()-300, 150);
+                    shutdownPanel = new Panel(GetScreenWidth()-315, 150);
+                    shutdownPanel->opacity = 0;
                     shutdownPanel->font = SegoeUI;
                     shutdownOption = new ListItem("Shutdown", {0}, "systemctl poweroff", 2, 1, 0, 0);
                     restartOption = new ListItem("Restart", {0}, "systemctl reboot", 2, 1, 0, 1);
@@ -72,10 +79,58 @@ void Update() {
                     mainPage.panels.pop_back();
                     shutdownPanel = new Panel(0,0);
                 }
-                //system("systemctl poweroff");
             } else if (usercontroptr->name == "Search"){
                 //system("xdg-open https://www.google.com/");
             }
+        }
+    }
+
+    for(UserControl* usercontroptr : appsPage.userControls){
+        if(usercontroptr->isMouseOver()){
+            usercontroptr->backgroundColor = (Color){ 255, 255, 255, 50 };
+        } else {
+            usercontroptr->backgroundColor = (Color){ 0, 0, 0, 0 };
+        }
+        
+        if(usercontroptr->name == "Up" && !showStartScreen && usercontroptr->clicked() ==  true){
+            offset = 0;
+            showStartScreen = true;
+            buttonsEnabled = false;
+        }
+    }
+
+    if(showStartScreen){
+        if(offset * offset < 0.95f){
+            offset += 0.04f;
+            appsPage.Move(appsPage.x, GetScreenHeight()*offset*offset);
+            mainPage.Move(mainPage.x, GetScreenHeight()*offset*offset - GetScreenHeight());
+        } else {
+            appsPage.Move(appsPage.x,GetScreenHeight());
+            mainPage.Move(mainPage.x,0);
+            buttonsEnabled = true;
+        }
+            
+        
+    } else {
+        if(offset * offset < 0.95f){
+            offset += 0.04f;
+            mainPage.Move(mainPage.x, -GetScreenHeight()*(offset*offset));
+            appsPage.Move(appsPage.x, GetScreenHeight() - GetScreenHeight()*offset*offset);
+        } else {
+            mainPage.Move(mainPage.x,-GetScreenHeight());
+            appsPage.Move(appsPage.x,0);
+            buttonsEnabled = true;
+        }
+        
+        
+        
+    }
+
+    if(shutdownMenu){
+        if (shutdownPanel->opacity < 1){
+            shutdownPanel->opacity += 0.10f;
+        }  else {
+            shutdownPanel->opacity = 1;
         }
     }
 
@@ -90,4 +145,20 @@ void Update() {
             listitemptr->backgroundColor = WHITE;
         }
     }
+
+    for (ListItem* listitemptr : appsPanel->listItems){
+        if(listitemptr->clicked()){
+            if(fork() == 0) {
+                    system(listitemptr->command.c_str());
+                }
+                openingTask = true;
+        }
+
+        if(listitemptr->isMouseOver()){
+            listitemptr->backgroundColor = (Color){255,255,255,50};
+        } else {
+            listitemptr->backgroundColor = (Color){0,0,0,0};
+        }
+    }
+    
 }

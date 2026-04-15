@@ -14,6 +14,8 @@ void UnloadResources();
 
 extern int horizontalMargin, verticalMargin;
 extern Panel* mainPanel;
+extern Panel* appsPanel;
 extern Page mainPage;
+extern Page appsPage;
 
 extern Font SegoeUI;
