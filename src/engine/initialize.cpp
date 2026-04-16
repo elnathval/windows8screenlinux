@@ -139,6 +139,8 @@ void ParseApplicationFile(std::string filePath) {
     std::cout<<"Parsed application: "<<name<<" with command: "<<exec<<" and icon: "<<icon<<std::endl;
     int order = appNames.size();
     appNames[name] = exec;
+
+    
     
     //ListItem* appListItem =new ListItem(name, {0}, exec, 4, 2, 0, order);
     //appsPanel->add(appListItem);
@@ -147,6 +149,7 @@ void ParseApplicationFile(std::string filePath) {
 void PushItems(){
     int order = 0;
     for(auto i = appNames.begin(); i != appNames.end(); i++){
+        //Texture sigma = LoadTexture("mail.png");
         ListItem* appListItem =new ListItem(i->first, {0}, i->second, 4, 1, 4* (order / 10), order % 10);
         appsPanel->add(appListItem);
         order++;

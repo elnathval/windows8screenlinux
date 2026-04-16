@@ -138,11 +138,17 @@ void ListItem::Draw(float offsetx, float offsety)
     float screenX = offsetx + this->gridX * tileSize;
     float screenY = offsety + this->gridY * tileSize * 2 / 3 ;
 
+    std::string tempLabel = this->label.c_str();
+
+    while(MeasureTextEx(this->parentPanel->font, tempLabel.c_str(), 30, 1).x > this->width * tileSize - 20 *tileMargin) {
+        tempLabel.erase(tempLabel.length() - 1);
+    }
+
+    if(tempLabel.compare(this->label)) tempLabel.append("...");    
 
     DrawRectangle(screenX, screenY, this->width * halfTileSize, this->height * halfTileSize/1.5, color);
-    DrawTextEx(this->parentPanel->font, this->label.c_str(), (Vector2){  screenX + 2 * tileMargin, screenY + this->height * halfTileSize / 3 - 15 }, 30, 1, text);
 
-    /*if (this->icon.id != 0)
+    if (this->icon.id != 0)
     {
         float iconSize;
         if(this->width > this->height){
@@ -150,9 +156,13 @@ void ListItem::Draw(float offsetx, float offsety)
         } else {
             iconSize = (this->width)/1.5f;
         }
-        DrawTextureEx(this->icon, (Vector2){ this->offsetX + offsetx + (this->width / 2) - iconSize / 2, this->offsetY + offsety + (this->height / 2) - iconSize / 2 }, 0, iconSize / 1000, (Color){ 255, 255, 255, 255 * opacity });
-    }*/
+        DrawTextureEx(this->icon, (Vector2){ screenX + 2 * tileMargin, screenY + (this->height / 2) - iconSize / 2 }, 0, iconSize / 1000, (Color){ 255, 255, 255, 255 * opacity });
+        DrawTextEx(this->parentPanel->font, tempLabel.c_str(), (Vector2){  screenX + 15 * tileMargin, screenY + this->height * halfTileSize / 3 - 15 }, 30, 1, text);
+    } else {
+        DrawTextEx(this->parentPanel->font, tempLabel.c_str(), (Vector2){  screenX + 2 * tileMargin, screenY + this->height * halfTileSize / 3 - 15 }, 30, 1, text);
+    }
 }
+
 
 bool ListItem::clicked()
 {
