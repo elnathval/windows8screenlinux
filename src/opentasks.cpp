@@ -1,4 +1,5 @@
 #include "engine/rendering.h"
+#include "engine/initialize.h"
 #include <iostream>
 #include <unistd.h>
 #include <csignal>
@@ -20,10 +21,20 @@ bool buttonsEnabled = true;
 float offset = 1;
 float lastScrollValue = 0;
 
+char busqueda[50] = "";
+
 void Update() {
     signal(SIGUSR1, killSignal);
 
+    keyPressed = GetKeyPressed();
+    charPressed = GetCharPressed();
+    leftClickPressed = IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
+
     if(!IsWindowFocused()) openingTask = true;
+
+    if(leftClickPressed && !searchPanel->isMouseOver()){
+        searchPage.isShowing = false;
+    }
 
     for (Tile* tileptr : mainPanel->tiles) {
         if (tileptr->isLeftClicked()) {
@@ -80,7 +91,8 @@ void Update() {
                     shutdownPanel = new Panel(0,0);
                 }
             } else if (usercontroptr->name == "Search"){
-                //system("xdg-open https://www.google.com/");
+                //GuiTextBox((Rectangle){0,0,250,250}, busqueda, 20, true);
+                (searchPage.isShowing) ? searchPage.isShowing = false : searchPage.isShowing = true;
             }
         }
     }
@@ -158,6 +170,52 @@ void Update() {
             listitemptr->backgroundColor = (Color){255,255,255,50};
         } else {
             listitemptr->backgroundColor = (Color){0,0,0,0};
+        }
+    }
+    
+
+
+    if(charPressed != 0){
+        searchPage.isShowing = true;
+    }
+
+    
+
+    if(queryBox->valueChanged){
+        auto iterator = appNames.lower_bound(queryBox->text);
+        searchPanel->listItems.clear();
+        int startY = 1;
+        while(startY < appNames.size() && queryBox->text != ""){
+            
+            for(int i = 0; i < queryBox->text.length(); i++){
+                if(iterator == appNames.end() || iterator->first == ""){
+                    return;
+                }
+                if(queryBox->text[i] != iterator->first[i]){
+                    return;
+                }
+            }
+            ListItem* requestedItem = new ListItem(iterator->first, {0}, iterator->second, 5, 1, 0, startY);
+            searchPanel->add(requestedItem);
+            std::cout<<appNames.size()<<std::endl;    
+            iterator++;
+            startY++;
+        }
+        
+    }
+
+    for(ListItem* listItemPtr : searchPanel->listItems){
+        if(listItemPtr->isMouseOver()){
+            listItemPtr->backgroundColor = (Color){255,255,255,50};
+        } else {
+            listItemPtr->backgroundColor = (Color){0,0,0,0};
+        }
+
+        if(listItemPtr->clicked()){
+            if(fork() == 0) {
+                    system(listItemPtr->command.c_str());
+                }
+                openingTask = true;
         }
     }
     

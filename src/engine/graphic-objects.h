@@ -6,12 +6,17 @@
 extern float tileSize;
 extern float tileMargin;
 extern std::map<std::string, Texture> textureMap;
+extern int keyPressed;
+extern int charPressed;
+extern bool leftClickPressed;
 
 class Panel;
 
 class UserControl;
 
 class Label;
+
+class TextBox;
 
 class Page {
 public:
@@ -20,6 +25,7 @@ public:
     std::vector<UserControl*> userControls;
     std::vector<Label*> labels;
     std::string Title;
+    bool isShowing = true;
     Page(std::string title, float x, float y) {
         this->Title = title;
         this->x = x;
@@ -118,6 +124,7 @@ public:
     float opacity = 1.0f;
     std::vector<Tile*> tiles;
     std::vector<ListItem*> listItems;
+    std::vector<TextBox*> textBoxes;
     Font font;
     Page* parentPage;
     Color backgroundColor = (Color){0,0,0,0};
@@ -155,6 +162,7 @@ public:
         this->y = newY;
         this->notScrolledX = newX;
     };
+    bool isMouseOver();
 private:
     float lastScrollValue = 0;
     float notScrolledX, notScrolledY;
@@ -176,6 +184,30 @@ public:
         this->color = color;
         this->font = font;
         this->fontSize = fontSize;
+    };
+    void Draw(float offsetX, float offsetY);
+};
+
+class TextBox {
+public:
+    std::string placeholder;
+    std::string text;
+    int x,y;
+    int width, height;
+    Font font;
+    float opacity = 1.0f;
+    Color backgroundColor = (Color){255, 255, 255, 255};
+    Color textColor = (Color){0,0,0, 255};
+    bool enabled = true;
+    bool valueChanged = false;
+    TextBox(std::string placeholder, std::string text, int x, int y, int width, int height, Font font) {
+        this->placeholder=placeholder;
+        this->text = text;
+        this->x = x;
+        this->y = y;
+        this->width = width;
+        this->height = height;
+        this->font = font;
     };
     void Draw(float offsetX, float offsetY);
 };

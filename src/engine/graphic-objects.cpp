@@ -10,6 +10,10 @@ float tileSize;
 float tileMargin;
 int fontSize = 20;
 
+int keyPressed;
+int charPressed;
+bool leftClickPressed = false;
+
 std::map<std::string, Texture> textureMap;
 
 bool Tile::isLeftClicked() {
@@ -49,8 +53,11 @@ void Tile::Draw(float offsetX, float offsetY) {
 
 
 void Panel::Draw(float offsetX, float offsetY) {
+    this->offsetX = offsetX;
+    this->offsetY = offsetY;
+    
     if(backgroundColor.a > 0){
-        DrawRectangle(offsetX, offsetY, this->width, this->height, backgroundColor);
+        DrawRectangle(offsetX + this->x, offsetY + this->y, this->width, this->height, backgroundColor);
     }
 
     for (Tile* tileptr : tiles) {
@@ -59,6 +66,9 @@ void Panel::Draw(float offsetX, float offsetY) {
     for (ListItem* listItemPtr : listItems) {
         listItemPtr->Draw(offsetX + this->x, offsetY + this->y);
     }
+    for (TextBox* textBoxPtr : textBoxes) {
+        textBoxPtr->Draw(offsetX + this->x, offsetY + this->y);
+    }
 
     if(isScrollable){
 
@@ -66,7 +76,7 @@ void Panel::Draw(float offsetX, float offsetY) {
         
         if(GetMouseWheelMove() == 0){
             lastScrollValue -= lastScrollValue/3;
-            this->x += lastScrollValue*75;
+            this->x += lastScrollValue*175;
         } else {
             lastScrollValue = GetMouseWheelMove();
         }
@@ -84,6 +94,11 @@ void Panel::Draw(float offsetX, float offsetY) {
     }
 }
 
+bool Panel::isMouseOver()
+{
+    
+    return CheckCollisionPointRec(GetMousePosition(), (Rectangle){this->x + this->offsetX, this->y + this->offsetY, this->width, this->height});
+}
 
 void UserControl::Draw(float offsetX, float offsetY)
 {
@@ -109,6 +124,7 @@ bool UserControl::isMouseOver(){
 
 void Page::Draw()
 {
+    if(!this->isShowing) return;
     for (Panel* panelptr : panels) {
         panelptr->Draw(this->x, this->y);
     }
@@ -176,4 +192,29 @@ bool ListItem::isMouseOver()
     float screenX = this->offsetX + this->gridX * tileSize;
     float screenY = this->offsetY + this->gridY * tileSize * 2 / 3;
     return CheckCollisionPointRec(GetMousePosition(), (Rectangle){ screenX, screenY, this->width * tileSize, this->height * tileSize * 2 / 3 });
+}
+
+void TextBox::Draw(float offsetX, float offsetY)
+{
+    float screenX = this->x * tileSize + offsetX + 2*tileMargin;
+    float screenY = this->y * tileSize*2/3 + offsetY + 2*tileMargin;
+    float screenWidth = this->width * tileSize - 4*tileMargin;
+    float screenHeight = this->height * tileSize * 2/3 - 4 * tileMargin;
+    DrawRectangle(screenX, screenY, screenWidth, screenHeight, backgroundColor);
+    DrawTextEx(this->font, this->text.c_str(), (Vector2){screenX + tileMargin, screenY + screenHeight / 2 - 15}, 30, 1, this->textColor);
+
+    if(enabled){
+        if(charPressed == 0){
+            if(keyPressed == KEY_BACKSPACE && this->text.length() != 0){
+                this->text.erase(this->text.length() - 1);
+                this->valueChanged = true;
+            } else {
+                this->valueChanged = false;
+            }
+            
+        } else {
+            this->text.push_back((char)charPressed);
+            this->valueChanged = true;
+        }
+    }
 }

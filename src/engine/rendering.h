@@ -1,4 +1,4 @@
-#include "raylib.h"
+#include "raylib.h" 
 #include "resource_dir.h"
 #include "graphic-objects.h"
 
@@ -15,7 +15,11 @@ void UnloadResources();
 extern int horizontalMargin, verticalMargin;
 extern Panel* mainPanel;
 extern Panel* appsPanel;
+extern Panel* searchPanel;
 extern Page mainPage;
 extern Page appsPage;
+extern Page searchPage;
+
+extern TextBox* queryBox;
 
 extern Font SegoeUI;
