@@ -6,12 +6,17 @@
 extern float tileSize;
 extern float tileMargin;
 extern std::map<std::string, Texture> textureMap;
+extern int keyPressed;
+extern int charPressed;
+extern bool leftClickPressed;
 
 class Panel;
 
 class UserControl;
 
 class Label;
+
+class TextBox;
 
 class Page {
 public:
@@ -20,6 +25,7 @@ public:
     std::vector<UserControl*> userControls;
     std::vector<Label*> labels;
     std::string Title;
+    bool isShowing = true;
     Page(std::string title, float x, float y) {
         this->Title = title;
         this->x = x;
@@ -113,13 +119,16 @@ public:
 class Panel {
 public:
     std::string name;
-    float x, y, width, height;
+    float x, y, width = 0, height = 0;
     float offsetX, offsetY;
     float opacity = 1.0f;
     std::vector<Tile*> tiles;
     std::vector<ListItem*> listItems;
+    std::vector<TextBox*> textBoxes;
     Font font;
     Page* parentPage;
+    Color backgroundColor = (Color){0,0,0,0};
+    bool isScrollable = false;
 
     //This x, y, width and height of the panel are in screen coordinates, not grid coordinates. The panel will be responsible for rendering the tiles within it based on their grid coordinates and the panel's position and size.
     Panel(float x, float y, float width, float height){
@@ -127,11 +136,13 @@ public:
         this->y = y;
         this->width = width;
         this->height = height;
+        this->notScrolledX = x;
     };
     //This x and y of the panel are in screen coordinates, not grid coordinates. The panel will be responsible for rendering the tiles within it based on their grid coordinates and the panel's position.
     Panel(float x, float y){
         this->x = x;
         this->y = y;
+        this->notScrolledX = x;
     };
     void add(Tile* tileptr){
         tileptr->parentPanel = this;
@@ -140,12 +151,22 @@ public:
     void add(ListItem* listItemPtr){
         listItemPtr->parentPanel = this;
         this->listItems.push_back(listItemPtr);
+        if((listItemPtr->gridX + 1) * listItemPtr->width > furthestPointX) {
+            furthestPointX = listItemPtr->gridX  + listItemPtr->width;
+        }
+    
     };
     void Draw(float offsetX, float offsetY);
     void Move(float newX, float newY){
         this->x = newX;
         this->y = newY;
+        this->notScrolledX = newX;
     };
+    bool isMouseOver();
+private:
+    float lastScrollValue = 0;
+    float notScrolledX, notScrolledY;
+    int furthestPointX = 0;
 };
 
 class Label {
@@ -163,6 +184,30 @@ public:
         this->color = color;
         this->font = font;
         this->fontSize = fontSize;
+    };
+    void Draw(float offsetX, float offsetY);
+};
+
+class TextBox {
+public:
+    std::string placeholder;
+    std::string text;
+    int x,y;
+    int width, height;
+    Font font;
+    float opacity = 1.0f;
+    Color backgroundColor = (Color){255, 255, 255, 255};
+    Color textColor = (Color){0,0,0, 255};
+    bool enabled = true;
+    bool valueChanged = false;
+    TextBox(std::string placeholder, std::string text, int x, int y, int width, int height, Font font) {
+        this->placeholder=placeholder;
+        this->text = text;
+        this->x = x;
+        this->y = y;
+        this->width = width;
+        this->height = height;
+        this->font = font;
     };
     void Draw(float offsetX, float offsetY);
 };

@@ -35,7 +35,6 @@ bool isAlreadyRunning() {
 void writePID() {
     std::ofstream f(LOCK_FILE);
     f << getpid();
-    std::cout<<getpid();
 }
 
 void closeLockFile() {

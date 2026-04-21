@@ -21,12 +21,22 @@ Font SegoeUI;
 
 Panel* mainPanel;
 Label* startLabel;
+Label* searchLabel;
 UserControl* downButton;
+
+TextBox* queryBox;
+
+Panel* appsPanel;
+
+Panel* searchBarPanel;
+Panel* searchPanel;
 
 UserControl* shutdownButton;
 UserControl* searchButton;
 
 Page mainPage("Start", 0, 0);
+Page appsPage("All Apps", 0, 0);
+Page searchPage("Search", 0,0);
 
 void InitialAnimation(){
     for(float i = 1; i > 0; i -= 0.15f){
@@ -82,6 +92,10 @@ void Render()
 
     mainPage.Draw();
 
+    appsPage.Draw();
+
+    searchPage.Draw();
+
 }
 
 void LoadResources()
@@ -103,10 +117,11 @@ void LoadResources()
 
     horizontalMargin = GetScreenWidth() * 0.1;
     verticalMargin = GetScreenHeight() * 0.2;
-    tileSize = GetScreenHeight() * 0.7 / 4;
+    tileSize = GetScreenHeight() * 0.7 / 8;
     tileMargin = 5;
 
     Texture downArrow = LoadTexture("downbutton.png");
+    Texture upArrow = LoadTexture("upbutton.png");
     Texture shutdownIcon = LoadTexture("shutdown.png");
     Texture searchIcon = LoadTexture("search.png");
 
@@ -122,6 +137,35 @@ void LoadResources()
     mainPage.userControls.push_back(downButton);
     mainPage.userControls.push_back(shutdownButton);
     mainPage.userControls.push_back(searchButton);
+
+    appsPanel = new Panel(horizontalMargin, verticalMargin, GetScreenWidth() - 2 * horizontalMargin, GetScreenHeight() - 2 * verticalMargin);
+
+    UserControl* upButton = new UserControl("Up", upArrow, horizontalMargin, GetScreenHeight() - 100, 50, 50);
+
+    appsPanel->font = SegoeUI;
+    appsPanel->isScrollable = true;
+    Label* appsTitle = new Label("All apps", horizontalMargin, 60, WHITE, SegoeUI, 90);
+    appsPage.panels.push_back(appsPanel);
+    appsPage.labels.push_back(appsTitle);
+    appsPage.userControls.push_back(upButton);
+    appsPage.Move(0, GetScreenHeight());
+
+    searchLabel = new Label("Search", 2*tileMargin, 60, WHITE, SegoeUI, 70);
+    searchPage.labels.push_back(searchLabel);
+    searchPage.isShowing = false;
+    searchPage.Move(GetScreenWidth() - 5*tileSize, 0);
+    searchPanel = new Panel(0, 150, 5*tileSize, GetScreenHeight());
+    searchBarPanel = new Panel(0, 0, 5*tileSize, 150);
+    searchPanel->backgroundColor = (Color){41, 1, 87, 255}; 
+    searchBarPanel->backgroundColor = (Color){41, 1, 87, 255};
+    searchPanel->font = SegoeUI;
+
+    queryBox = new TextBox("", "", 0, 0, 5, 1,SegoeUI);
+    searchPanel->textBoxes.push_back(queryBox);
+
+    searchPage.panels.push_back(searchPanel);
+    searchPage.panels.push_back(searchBarPanel);
+    
 }
 
 
@@ -129,6 +173,15 @@ void UnloadResources()
 {
     UnloadFont(SegoeUI);
     for(Panel* panelptr : mainPage.panels){
+        for(Tile* tileptr : panelptr->tiles){
+            delete tileptr;
+        }
+        for(ListItem* listItemPtr : panelptr->listItems){
+            delete listItemPtr;
+        }
+        delete panelptr;
+    }
+    for(Panel* panelptr : appsPage.panels){
         for(Tile* tileptr : panelptr->tiles){
             delete tileptr;
         }

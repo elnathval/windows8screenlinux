@@ -3,16 +3,17 @@
 #include <iostream>
 #include <stdlib.h>
 #include <thread>
+#include <vector>
 
-
+std::map<std::string, std::string> appNames;
 
 void DefaultTileConfig() {
-    Tile *mail = new Tile(0, 0, 2, 1, (Color){ 0, 120, 215, 255 }, "Mail", "xdg-open mailto:");
-    Tile *desktop = new Tile(2, 0, 2, 1, (Color){ 0, 120, 215, 255 }, "Desktop", "desktop");
-    Tile *calendar = new Tile(0, 1, 2, 1, (Color){ 138, 57, 191, 255 }, "Calendar", "xdg-open webcal:");
-    Tile *explorer = new Tile(2, 1, 1, 1, (Color){ 57, 191, 153, 255 }, "Files", "xdg-open ~");
-    Tile *finances = new Tile(0, 2, 2, 1, (Color){ 30, 117, 38, 255 }, "Finance", "xdg-open https://www.google.com/finance/");
-    Tile *browser = new Tile(2, 2, 1, 1, (Color){ 47, 121, 181, 255 }, "Browser", "xdg-open https://www.google.com/");
+    Tile *mail = new Tile(0, 0, 4, 2, (Color){ 0, 120, 215, 255 }, "Mail", "xdg-open mailto:");
+    Tile *desktop = new Tile(4, 0, 4, 2, (Color){ 0, 120, 215, 255 }, "Desktop", "desktop");
+    Tile *calendar = new Tile(0, 2, 4, 2, (Color){ 138, 57, 191, 255 }, "Calendar", "xdg-open webcal:");
+    Tile *explorer = new Tile(4, 2, 2, 2, (Color){ 57, 191, 153, 255 }, "Files", "xdg-open ~");
+    Tile *finances = new Tile(0, 4, 4, 2, (Color){ 30, 117, 38, 255 }, "Finance", "xdg-open https://www.google.com/finance/");
+    Tile *browser = new Tile(4, 4, 2, 2, (Color){ 47, 121, 181, 255 }, "Browser", "xdg-open https://www.google.com/");
     mainPanel->add(desktop);
     mainPanel->add(mail);
     mainPanel->add(calendar);
@@ -105,6 +106,12 @@ void ParseApplicationFile(std::string filePath) {
     std::string name;
     std::string exec;
     std::string icon;
+    bool noDisplay = false;
+    std::getline(appFile,line);
+    if(line != "[Desktop Entry]"){
+        std::cout<<"Not an entry"<<std::endl;
+        return;
+    }
     while (std::getline(appFile, line)) {
         if (line.rfind("Name=", 0) == 0) {
             name = line.substr(5);
@@ -112,14 +119,42 @@ void ParseApplicationFile(std::string filePath) {
             exec = line.substr(5);
         } else if (line.rfind("Icon=", 0) == 0) {
             icon = line.substr(5);
-        }
+        } else if (line.rfind("NoDisplay") == 0) {
+            noDisplay = (line.substr(10) == "true");
+        } else if(line == "") break;
     }
     appFile.close();
-    if (name.empty() || exec.empty()) {
+    if (name.empty() || exec.empty() || noDisplay) {
         std::cout<<"Invalid application file: "<<filePath<<std::endl;
         return;
     }
+    for (const std::string code : {"%f","%F","%u","%U","%i","%c","%k","%%"}) {
+        size_t pos;
+        while ((pos = exec.find(code)) != std::string::npos)
+            exec.erase(pos, code.size());
+    }
+
+    while (exec.find("  ") != std::string::npos) exec.replace(exec.find("  "), 2, " ");
+
     std::cout<<"Parsed application: "<<name<<" with command: "<<exec<<" and icon: "<<icon<<std::endl;
+    int order = appNames.size();
+    appNames[name] = exec;
+
+    
+    
+    //ListItem* appListItem =new ListItem(name, {0}, exec, 4, 2, 0, order);
+    //appsPanel->add(appListItem);
+}
+
+void PushItems(){
+    int order = 0;
+    for(auto i = appNames.begin(); i != appNames.end(); i++){
+        //Texture sigma = LoadTexture("mail.png");
+        ListItem* appListItem =new ListItem(i->first, {0}, i->second, 4, 1, 4* (order / 10), order % 10);
+        appsPanel->add(appListItem);
+        order++;
+    }
+    
 }
 
 void GetApplications() {
@@ -129,16 +164,18 @@ void GetApplications() {
     FilePathList snapApplications = LoadDirectoryFiles("/var/lib/snapd/desktop/applications");
     FilePathList allApplications;
     for (unsigned int i = 0; i < rootApplications.count; i++) {
-        std::thread(ParseApplicationFile, rootApplications.paths[i]).detach();
+        ParseApplicationFile(rootApplications.paths[i]);
     }
     for (unsigned int i = 0; i < userApplications.count; i++) {
-        std::thread(ParseApplicationFile, userApplications.paths[i]).detach();
+        ParseApplicationFile(userApplications.paths[i]);
     }
     for (unsigned int i = 0; i < snapApplications.count; i++) {
-        std::thread(ParseApplicationFile, snapApplications.paths[i]).detach();
+        ParseApplicationFile(snapApplications.paths[i]);
     }
 
 
+    PushItems();
+    
 }
 
 

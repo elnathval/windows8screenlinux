@@ -10,6 +10,10 @@ float tileSize;
 float tileMargin;
 int fontSize = 20;
 
+int keyPressed;
+int charPressed;
+bool leftClickPressed = false;
+
 std::map<std::string, Texture> textureMap;
 
 bool Tile::isLeftClicked() {
@@ -49,6 +53,12 @@ void Tile::Draw(float offsetX, float offsetY) {
 
 
 void Panel::Draw(float offsetX, float offsetY) {
+    this->offsetX = offsetX;
+    this->offsetY = offsetY;
+    
+    if(backgroundColor.a > 0){
+        DrawRectangle(offsetX + this->x, offsetY + this->y, this->width, this->height, backgroundColor);
+    }
 
     for (Tile* tileptr : tiles) {
         tileptr->Draw(offsetX + this->x, offsetY + this->y);
@@ -56,8 +66,39 @@ void Panel::Draw(float offsetX, float offsetY) {
     for (ListItem* listItemPtr : listItems) {
         listItemPtr->Draw(offsetX + this->x, offsetY + this->y);
     }
+    for (TextBox* textBoxPtr : textBoxes) {
+        textBoxPtr->Draw(offsetX + this->x, offsetY + this->y);
+    }
+
+    if(isScrollable){
+
+        this->x += GetMouseWheelMove()*50;
+        
+        if(GetMouseWheelMove() == 0){
+            lastScrollValue -= lastScrollValue/3;
+            this->x += lastScrollValue*175;
+        } else {
+            lastScrollValue = GetMouseWheelMove();
+        }
+
+        if(this->x > (this->notScrolledX)){
+            this->x = this->notScrolledX; 
+            lastScrollValue = 0;
+            return;
+        }else if(this->x + this->furthestPointX * tileSize < this->width + this->notScrolledX){
+            this->x = this->notScrolledX +  this->width - this->furthestPointX * tileSize; 
+            lastScrollValue = 0;
+            return;
+        }
+        
+    }
 }
 
+bool Panel::isMouseOver()
+{
+    
+    return CheckCollisionPointRec(GetMousePosition(), (Rectangle){this->x + this->offsetX, this->y + this->offsetY, this->width, this->height});
+}
 
 void UserControl::Draw(float offsetX, float offsetY)
 {
@@ -83,6 +124,7 @@ bool UserControl::isMouseOver(){
 
 void Page::Draw()
 {
+    if(!this->isShowing) return;
     for (Panel* panelptr : panels) {
         panelptr->Draw(this->x, this->y);
     }
@@ -105,19 +147,24 @@ void ListItem::Draw(float offsetx, float offsety)
     this->offsetX = offsetx;
     this->offsetY = offsety;
 
-    Color color = (Color){ backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a * opacity };
-    Color text = (Color){ textColor.r, textColor.g, textColor.b, textColor.a * opacity };
+    Color color = (Color){ backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a * opacity * this->parentPanel->opacity };
+    Color text = (Color){ textColor.r, textColor.g, textColor.b, textColor.a * opacity * this->parentPanel->opacity };
 
-    float halfTileSize = tileSize / 2;
-    float screenX = offsetx + this->gridX * tileSize / 2;
-    float screenY = offsety + this->gridY * tileSize / 2;
+    float halfTileSize = tileSize;
+    float screenX = offsetx + this->gridX * tileSize;
+    float screenY = offsety + this->gridY * tileSize * 2 / 3 ;
 
-    std::cout<<screenX<<std::endl;
+    std::string tempLabel = this->label.c_str();
 
-    DrawRectangle(screenX, screenY, this->width * halfTileSize, this->height * halfTileSize, color);
-    DrawTextEx(this->parentPanel->font, this->label.c_str(), (Vector2){  screenX + 2 * tileMargin, screenY + halfTileSize / 2 - 15 }, 30, 1, text);
+    while(MeasureTextEx(this->parentPanel->font, tempLabel.c_str(), 30, 1).x > this->width * tileSize - 20 *tileMargin) {
+        tempLabel.erase(tempLabel.length() - 1);
+    }
 
-    /*if (this->icon.id != 0)
+    if(tempLabel.compare(this->label)) tempLabel.append("...");    
+
+    DrawRectangle(screenX, screenY, this->width * halfTileSize, this->height * halfTileSize/1.5, color);
+
+    if (this->icon.id != 0)
     {
         float iconSize;
         if(this->width > this->height){
@@ -125,22 +172,49 @@ void ListItem::Draw(float offsetx, float offsety)
         } else {
             iconSize = (this->width)/1.5f;
         }
-        DrawTextureEx(this->icon, (Vector2){ this->offsetX + offsetx + (this->width / 2) - iconSize / 2, this->offsetY + offsety + (this->height / 2) - iconSize / 2 }, 0, iconSize / 1000, (Color){ 255, 255, 255, 255 * opacity });
-    }*/
+        DrawTextureEx(this->icon, (Vector2){ screenX + 2 * tileMargin, screenY + (this->height / 2) - iconSize / 2 }, 0, iconSize / 1000, (Color){ 255, 255, 255, 255 * opacity });
+        DrawTextEx(this->parentPanel->font, tempLabel.c_str(), (Vector2){  screenX + 15 * tileMargin, screenY + this->height * halfTileSize / 3 - 15 }, 30, 1, text);
+    } else {
+        DrawTextEx(this->parentPanel->font, tempLabel.c_str(), (Vector2){  screenX + 2 * tileMargin, screenY + this->height * halfTileSize / 3 - 15 }, 30, 1, text);
+    }
 }
+
 
 bool ListItem::clicked()
 {
-    float screenX = this->offsetX + this->gridX * tileSize / 2;
-    float screenY = this->offsetY + this->gridY * tileSize / 2;
-    std::cout<<screenX<<std::endl;
-    return CheckCollisionPointRec(GetMousePosition(), (Rectangle){ screenX, screenY, this->width * tileSize / 2, this->height * tileSize / 2 }) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
+    float screenX = this->offsetX + this->gridX * tileSize;
+    float screenY = this->offsetY + this->gridY * tileSize * 2 / 3;
+    return CheckCollisionPointRec(GetMousePosition(), (Rectangle){ screenX, screenY, this->width * tileSize, this->height * tileSize * 2 / 3 }) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
 }
 
 bool ListItem::isMouseOver()
 {
-    float screenX = this->offsetX + this->gridX * tileSize / 2;
-    float screenY = this->offsetY + this->gridY * tileSize / 2;
-    std::cout<<screenX<<std::endl;
-    return CheckCollisionPointRec(GetMousePosition(), (Rectangle){ screenX, screenY, this->width * tileSize / 2, this->height * tileSize / 2 });
+    float screenX = this->offsetX + this->gridX * tileSize;
+    float screenY = this->offsetY + this->gridY * tileSize * 2 / 3;
+    return CheckCollisionPointRec(GetMousePosition(), (Rectangle){ screenX, screenY, this->width * tileSize, this->height * tileSize * 2 / 3 });
+}
+
+void TextBox::Draw(float offsetX, float offsetY)
+{
+    float screenX = this->x * tileSize + offsetX + 2*tileMargin;
+    float screenY = this->y * tileSize*2/3 + offsetY + 2*tileMargin;
+    float screenWidth = this->width * tileSize - 4*tileMargin;
+    float screenHeight = this->height * tileSize * 2/3 - 4 * tileMargin;
+    DrawRectangle(screenX, screenY, screenWidth, screenHeight, backgroundColor);
+    DrawTextEx(this->font, this->text.c_str(), (Vector2){screenX + tileMargin, screenY + screenHeight / 2 - 15}, 30, 1, this->textColor);
+
+    if(enabled){
+        if(charPressed == 0){
+            if(keyPressed == KEY_BACKSPACE && this->text.length() != 0){
+                this->text.erase(this->text.length() - 1);
+                this->valueChanged = true;
+            } else {
+                this->valueChanged = false;
+            }
+            
+        } else {
+            this->text.push_back((char)charPressed);
+            this->valueChanged = true;
+        }
+    }
 }
