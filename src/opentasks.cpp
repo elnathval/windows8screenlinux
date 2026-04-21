@@ -17,8 +17,10 @@ void killSignal(int){
 }
  
 bool showStartScreen = true;
+bool showSearchScreen = false;
 bool buttonsEnabled = true;
 float offset = 1;
+float searchOffset = 1;
 float lastScrollValue = 0;
 
 char busqueda[50] = "";
@@ -33,7 +35,7 @@ void Update() {
     if(!IsWindowFocused()) openingTask = true;
 
     if(leftClickPressed && !searchPanel->isMouseOver()){
-        searchPage.isShowing = false;
+        showSearchScreen = false;
     }
 
     for (Tile* tileptr : mainPanel->tiles) {
@@ -92,9 +94,18 @@ void Update() {
                 }
             } else if (usercontroptr->name == "Search"){
                 //GuiTextBox((Rectangle){0,0,250,250}, busqueda, 20, true);
-                (searchPage.isShowing) ? searchPage.isShowing = false : searchPage.isShowing = true;
+                (showSearchScreen) ? showSearchScreen = false : showSearchScreen = true;
+                searchOffset = 0;
             }
         }
+    }
+
+    if(charPressed != 0){
+        if(showSearchScreen == false) {
+            showSearchScreen = true;
+            searchOffset = 0;
+        }
+        
     }
 
     for(UserControl* usercontroptr : appsPage.userControls){
@@ -138,6 +149,24 @@ void Update() {
         
     }
 
+    if(showSearchScreen){
+        searchPage.isShowing = true;
+        if(searchOffset * searchOffset < 0.95f){
+            searchOffset += 0.04f;
+            searchPage.x =GetScreenWidth() -  5*tileSize*searchOffset*searchOffset;
+        } else {
+            searchPage.x = GetScreenWidth() - 5*tileSize;
+        }
+    } else {
+        if(searchOffset * searchOffset < 0.95f){
+            searchOffset += 0.04f;
+            searchPage.x = GetScreenWidth() - 5*tileSize + 5*tileSize*searchOffset*searchOffset;
+        } else {
+            searchPage.x = GetScreenWidth();
+            searchPage.isShowing = false;
+        } 
+    }
+
     if(shutdownMenu){
         if (shutdownPanel->opacity < 1){
             shutdownPanel->opacity += 0.10f;
@@ -175,9 +204,7 @@ void Update() {
     
 
 
-    if(charPressed != 0){
-        searchPage.isShowing = true;
-    }
+    
 
     
 
@@ -197,7 +224,6 @@ void Update() {
             }
             ListItem* requestedItem = new ListItem(iterator->first, {0}, iterator->second, 5, 1, 0, startY);
             searchPanel->add(requestedItem);
-            std::cout<<appNames.size()<<std::endl;    
             iterator++;
             startY++;
         }
